@@ -6,11 +6,12 @@
 /*   By: trobicho <trobicho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/16 21:28:03 by trobicho          #+#    #+#             */
-/*   Updated: 2021/10/16 22:05:29 by trobicho         ###   ########.fr       */
+/*   Updated: 2021/10/16 22:53:53 by trobicho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Basic_vulk.hpp"
+#include <iostream>
 #include <cstring>
 #include <stdexcept>
 
@@ -56,7 +57,18 @@ std::vector<const char*>  get_extensions(uint32_t debug, uint32_t *ext_count)
 {
 	const char  **glfw_ext;
 	uint32_t    glfw_ext_count;
-	std::vector <const char*> extensions;
+	std::vector <const char*> exts;
+  uint32_t    extension_count = 0;
+
+  if (VK_RESULT_INFO(
+    vkEnumerateInstanceExtensionProperties(nullptr, &extension_count, nullptr))
+    != VK_SUCCESS)
+    throw std::runtime_error("failed to get instance layer properties");
+  std::vector<VkExtensionProperties> extensions(extension_count);
+  if (VK_RESULT_INFO(
+    vkEnumerateInstanceExtensionProperties(nullptr, &extension_count, extensions.data()))
+    != VK_SUCCESS)
+    throw std::runtime_error("failed to get instance layer properties");
 
 	glfw_ext = glfwGetRequiredInstanceExtensions(&glfw_ext_count);
 	*ext_count = glfw_ext_count;
@@ -66,12 +78,12 @@ std::vector<const char*>  get_extensions(uint32_t debug, uint32_t *ext_count)
     for (const auto& extension : extensions)
       std::cout << '\t' << extension.extensionName << std::endl;
   }
-  for(const char * extension : glfw_ext)
-    extensions.push_back(extension);
+  for(int i = 0; i < glfw_ext_count; ++i)
+    exts.push_back(glfw_ext[i]);
 	if (debug & DEBUG_EXTENSION)
 	{
-    extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME;
+    exts.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 		*ext_count += 1;
 	}
-	return (ext);
+	return (exts);
 }

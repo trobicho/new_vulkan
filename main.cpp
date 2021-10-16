@@ -6,15 +6,14 @@
 /*   By: trobicho <trobicho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/11 16:28:16 by trobicho          #+#    #+#             */
-/*   Updated: 2021/10/16 22:10:23 by trobicho         ###   ########.fr       */
+/*   Updated: 2021/10/16 23:20:53 by trobicho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#define DEBUG_SHOW_EVERY_RETURN_CODE
 #include "Basic_vulk.hpp"
 #include <iostream>
 
-static void	main_loop(Basic_vulkan &vulk, GLFWwindow *win)
+static void	main_loop(Basic_vulk &vulk, GLFWwindow *win)
 {
 	while(!glfwWindowShouldClose(win))
 	{
@@ -31,6 +30,7 @@ int main()
   Basic_vulk  vulk(win,
     DEBUG_PRINT_INFO | DEBUG_VALIDATION_LAYER | DEBUG_EXTENSION);
 
+  vulk.init();
 	main_loop(vulk, win);
 
   return (0);

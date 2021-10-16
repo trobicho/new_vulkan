@@ -6,7 +6,7 @@
 /*   By: trobicho <trobicho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/11 17:08:44 by trobicho          #+#    #+#             */
-/*   Updated: 2021/10/16 20:59:36 by trobicho         ###   ########.fr       */
+/*   Updated: 2021/10/16 23:21:36 by trobicho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,22 +16,19 @@
 
 void  info_vulkan_api_version()
 {
-  uint32_t  api_version
+  uint32_t  api_version;
 
-  if(VK_RESULT_INFO(vkEnumerateInstanceVersion(&api_version) != VK_SUCCRESS)
-    != VK_SUCCESS)
-  {
+  if (VK_RESULT_INFO(vkEnumerateInstanceVersion(&api_version)) != VK_SUCCESS)
     throw std::runtime_error("we're kinda fuck like really fuck damn");
-  }
   std::cout << "Vulkan API version: "
     << VK_API_VERSION_MAJOR(api_version) 
     << "." << VK_API_VERSION_MINOR(api_version) 
-    << "." << VK_API_VERSION_PATH(api_version) 
-    << " VARIENT: " << VK_API_VERSION_VARIENT(api_version) 
-    << endl;
+    << "." << VK_API_VERSION_PATCH(api_version) 
+    << " VARIENT: " << VK_API_VERSION_VARIANT(api_version) 
+    << std::endl;
 }
 
-VkResult  info_vulkan_error_code(VK_RESULT error_code)
+VkResult  info_vulkan_error_code(VkResult error_code)
 {
   switch(error_code)
   {
@@ -40,11 +37,11 @@ VkResult  info_vulkan_error_code(VK_RESULT error_code)
       break;
 
     case VK_NOT_READY:
-      std::cout << "success" << std::endl;
+      std::cout << "not ready" << std::endl;
       break;
 
     case VK_TIMEOUT:
-      std::cout << "success" << std::endl;
+      std::cout << "timeout" << std::endl;
       break;
 
     case VK_EVENT_SET:
