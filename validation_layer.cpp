@@ -6,7 +6,7 @@
 /*   By: trobicho <trobicho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/16 21:28:03 by trobicho          #+#    #+#             */
-/*   Updated: 2021/10/16 22:53:53 by trobicho         ###   ########.fr       */
+/*   Updated: 2021/10/17 20:06:32 by trobicho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,11 +29,12 @@ bool  val_layer_check(uint32_t debug, std::vector<const char *> &validation_laye
     != VK_SUCCESS)
     throw std::runtime_error("failed to get instance layer properties");
 
-  if (debug & DEBUG_PRINT_INFO)
+  if (debug & DEBUG_PRINT_INFO_VK)
   {
     std::cout << "available validation layers :" << std::endl;
     for (const auto& layer_properties : available_layers)
       std::cout << '\t' << layer_properties.layerName << std::endl;
+		std::cout << std::endl;
   }
   for (const char* layer_name : validation_layers)
   {
@@ -72,11 +73,12 @@ std::vector<const char*>  get_extensions(uint32_t debug, uint32_t *ext_count)
 
 	glfw_ext = glfwGetRequiredInstanceExtensions(&glfw_ext_count);
 	*ext_count = glfw_ext_count;
-  if (debug & DEBUG_PRINT_INFO)
+  if (debug & DEBUG_PRINT_INFO_VK)
   {
     std::cout << "available extensions:" << std::endl;
     for (const auto& extension : extensions)
       std::cout << '\t' << extension.extensionName << std::endl;
+		std::cout << std::endl;
   }
   for(int i = 0; i < glfw_ext_count; ++i)
     exts.push_back(glfw_ext[i]);
