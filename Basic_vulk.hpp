@@ -40,14 +40,17 @@ class Basic_vulk
 
 		//VULKAN VARIABLE
 		VkInstance        m_instance;
+		VkPhysicalDevice	m_physical_device;
 		VkDevice          m_device;
 };
 
-//INFO
-void      info_vulkan_api_version();
-VkResult  info_vulkan_error_code(VkResult error_code);
-
 //VAL_LAYER and EXTENSION
-void	info_physical_device(const VkPhysicalDevice &phy_dev);
-bool  val_layer_check(uint32_t debug, std::vector<const char *> &validation_layers);
+bool	val_layer_check(uint32_t debug, std::vector<const char *> &validation_layers);
 std::vector<const char*>  get_extensions(uint32_t debug, uint32_t *ext_count);
+
+//INFO
+void			info_vulkan_api_version();
+VkResult	info_vulkan_error_code(VkResult error_code);
+void			info_physical_device(const VkPhysicalDevice &phy_dev, int tab = 1);
+void			info_queue_family_properties(const VkPhysicalDevice &phy_dev, int tab = 1);
+

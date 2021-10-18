@@ -6,13 +6,30 @@
 /*   By: trobicho <trobicho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/17 18:34:44 by trobicho          #+#    #+#             */
-/*   Updated: 2021/10/17 20:04:35 by trobicho         ###   ########.fr       */
+/*   Updated: 2021/10/18 20:01:55 by trobicho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Basic_vulk.hpp"
 #include <iostream>
 
+static bool	is_device_suitable(const VkPhysicalDevice &phy_dev)
+{
+	uint32_t	queue_family_count;
+
+	vkGetPhysicalDeviceQueueFamilyProperties(phy_dev, &queue_family_count, nullptr); //void
+	if (queue_family_count == 0)
+		return false;
+	std::vector<VkQueueFamilyProperties>	queue_family_props(queue_family_count);
+	vkGetPhysicalDeviceQueueFamilyProperties(phy_dev
+			, &queue_family_count, queue_family_props.data());
+	for (const auto & queue : queue_family_props)
+	{
+		if (queue.queueFlags & VK_QUEUE_GRAPHICS_BIT)
+			return (true);
+	}
+	return (false);
+}
 
 void	Basic_vulk::choose_physical_device()
 {
@@ -32,6 +49,17 @@ void	Basic_vulk::choose_physical_device()
 		for(const auto &dev : phy_devices)
 		{
 			info_physical_device(dev);
+			info_queue_family_properties(dev, 2);
+		}
+	}
+	for(const auto &dev : phy_devices)
+	{
+		VkPhysicalDeviceProperties	dev_props;
+		vkGetPhysicalDeviceProperties(dev, &dev_props);
+		if (is_device_suitable(dev))
+		{
+			std::cout << "Choosed device: " << dev_props.deviceName << std::endl;
+			m_physical_device = dev;
 		}
 	}
 }

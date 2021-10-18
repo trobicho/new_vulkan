@@ -6,7 +6,7 @@
 /*   By: trobicho <trobicho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/11 17:08:44 by trobicho          #+#    #+#             */
-/*   Updated: 2021/10/17 20:07:21 by trobicho         ###   ########.fr       */
+/*   Updated: 2021/10/18 19:53:46 by trobicho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,14 @@
 #include <stdexcept>
 #include <string>
 #include "Basic_vulk.hpp"
+
+static std::string	indent(int t)
+{
+	std::string tab;
+	for (int i = 0; i < t; ++i)
+		tab += '\t';
+	return (tab);
+}
 
 static std::string	info_vendor_id(uint32_t	vendorID)
 {
@@ -77,25 +85,91 @@ static std::string	info_phy_dev_type(VkPhysicalDeviceType dev_type)
 	}
 }
 
-void	info_physical_device(const VkPhysicalDevice &phy_dev)
+void	info_physical_device(const VkPhysicalDevice &phy_dev, int tab)
 {
 	VkPhysicalDeviceProperties	dev_props;
 
 	vkGetPhysicalDeviceProperties(phy_dev, &dev_props); //return void
-  std::cout << "\t" << dev_props.deviceName << " :" << std::endl;
-  std::cout << "\t\tapi version:\t"
+  std::cout << indent(tab) << dev_props.deviceName << " :" << std::endl;
+  std::cout << indent(tab + 1) << "api version:\t"
 		<< VK_API_VERSION_MAJOR(dev_props.apiVersion) 
 		<< "." << VK_API_VERSION_MINOR(dev_props.apiVersion) 
 		<< "." << VK_API_VERSION_PATCH(dev_props.apiVersion) 
 		<< " VARIENT: " << VK_API_VERSION_VARIANT(dev_props.apiVersion) 
 		<< std::endl;
-  std::cout << "\t\tdriver version:\t" << dev_props.driverVersion << std::endl;
-  std::cout << "\t\tvendor id:\t" << info_vendor_id(dev_props.vendorID) << std::endl;
-  std::cout << "\t\tdevice id:\t" << dev_props.deviceID << std::endl;
-  std::cout << "\t\tdevice type:\t" << info_phy_dev_type(dev_props.deviceType)
-		<< std::endl;
+  std::cout << indent(tab + 1) << "driver version:\t" 
+		<< dev_props.driverVersion << std::endl;
+  std::cout << indent(tab + 1) << "vendor id:\t"
+		<< info_vendor_id(dev_props.vendorID) << std::endl;
+  std::cout << indent(tab + 1)
+		<< "device id:\t" << dev_props.deviceID << std::endl;
+  std::cout << indent(tab + 1) << "device type:\t"
+		<< info_phy_dev_type(dev_props.deviceType) << std::endl;
 
 	std::cout << std::endl;
+}
+
+static std::string	info_queue_flag_bits(VkQueueFlags qflag)
+{
+	std::string		flags;
+	bool					empty = true;
+
+	if (qflag & VK_QUEUE_GRAPHICS_BIT)
+	{
+		flags += "GRAPHICS";
+		empty = false;
+	}
+	if (qflag & VK_QUEUE_COMPUTE_BIT)
+	{
+		flags += (!empty) ? " & COMPUTE" : "COMPUTE";
+		empty = false;
+	}
+	if (qflag & VK_QUEUE_TRANSFER_BIT)
+	{
+		flags += (!empty) ? " & TRANSFER" : "TRANSFER";
+		empty = false;
+	}
+	if (qflag & VK_QUEUE_SPARSE_BINDING_BIT)
+	{
+		flags += (!empty) ? " & SPARSE_BINDING" : "SPARSE_BINDING";
+		empty = false;
+	}
+	if (qflag & VK_QUEUE_PROTECTED_BIT)
+	{
+		flags += (!empty) ? " & PROTECTED" : "PROTECTED";
+		empty = false;
+	}
+	return (flags);
+}
+
+void	info_queue_family_properties(const VkPhysicalDevice &phy_dev, int tab)
+{
+	uint32_t	queue_family_count;
+
+	vkGetPhysicalDeviceQueueFamilyProperties(phy_dev, &queue_family_count, nullptr); //void
+	if (queue_family_count == 0)
+		return ;
+	std::vector<VkQueueFamilyProperties>	queue_family_props(queue_family_count);
+	vkGetPhysicalDeviceQueueFamilyProperties(phy_dev
+			, &queue_family_count, queue_family_props.data());
+	std::cout << indent(tab) << "Queue family properties:" << std::endl;
+	for (const auto & queue : queue_family_props)
+	{
+		std::cout << indent(tab + 1) << "flags:\t"
+			<< info_queue_flag_bits(queue.queueFlags) << std::endl;
+		std::cout << indent(tab + 1) << "queue count:\t"
+			<< queue.queueCount << std::endl;
+		std::cout << indent(tab + 1) << "timestamp valid bits:\t"
+			<< queue.timestampValidBits << std::endl;
+		std::cout << indent(tab + 1) << "min image granularity:\t"
+			<< "("
+			<< queue.minImageTransferGranularity.width << ", "
+			<< queue.minImageTransferGranularity.height << ", "
+			<< queue.minImageTransferGranularity.depth << ")"
+			<< std::endl << std::endl;
+	}
+	std::cout << std::endl;
+	
 }
 
 void  info_vulkan_api_version()
