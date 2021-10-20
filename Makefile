@@ -6,7 +6,7 @@
 #    By: trobicho <trobicho@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/10/16 22:25:09 by trobicho          #+#    #+#              #
-#    Updated: 2021/10/20 03:49:07 by trobicho         ###   ########.fr        #
+#    Updated: 2021/10/20 10:10:35 by trobicho         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -34,9 +34,10 @@ endif
 
 SRCS_NAME =	main.cpp \
 		Basic_vulk.cpp \
+		validation_layer.cpp \
 		device_phy.cpp \
 		queue.cpp \
-		validation_layer.cpp \
+		swapchain.cpp \
 		info.cpp
 
 HDRS_NAME =	Basic_vulk.hpp \

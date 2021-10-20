@@ -6,7 +6,7 @@
 /*   By: trobicho <trobicho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/11 16:37:28 by trobicho          #+#    #+#             */
-/*   Updated: 2021/10/20 03:58:34 by trobicho         ###   ########.fr       */
+/*   Updated: 2021/10/20 10:39:59 by trobicho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,19 @@
 #include <iostream>
 #include <stdexcept>
 
-Basic_vulk::Basic_vulk(GLFWwindow *win, uint32_t debug_mode = 0x0) :
-	m_win(win), m_debug_mode(debug_mode)
+Basic_vulk::Basic_vulk(GLFWwindow *win, uint32_t win_width, uint32_t win_height
+	, uint32_t debug_mode = 0) : m_win(win)
+		, m_win_width(win_width)
+		, m_win_height(win_height)
+		, m_debug_mode(debug_mode)
 {
 }
 
 Basic_vulk::~Basic_vulk()
 {
+	vkDestroySwapchainKHR(m_device, m_swapchain, nullptr);
 	vkDestroyDevice(m_device, nullptr);
+	vkDestroySurfaceKHR(m_instance, m_surface, nullptr);
 	vkDestroyInstance(m_instance, nullptr);
 	glfwDestroyWindow(m_win);
 	glfwTerminate();
@@ -30,8 +35,10 @@ Basic_vulk::~Basic_vulk()
 void  Basic_vulk::init()
 {
 	create_instance();
+	create_surface();
 	choose_physical_device();
 	create_logical_device();
+	create_swapchain();
 }
 
 void  Basic_vulk::create_instance()
@@ -81,6 +88,8 @@ void	Basic_vulk::create_logical_device()
 	std::vector<const char*>  ext_names = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 
 	uint32_t	queue_family_index = queue_family(m_physical_device, m_surface);
+	if (queue_family_index == MAX_UINT32_T)
+		throw std::runtime_error("failed to find valid queue family!");
 	queue_create_info.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
 	queue_create_info.queueFamilyIndex = queue_family_index;
 	queue_create_info.queueCount = 1;
@@ -100,6 +109,12 @@ void	Basic_vulk::create_logical_device()
 	vkGetDeviceQueue(m_device, queue_family_index, 0, &m_queue_graphics);
 }
 
-void Basic_vulkan::create_surface()
+void	Basic_vulk::create_surface()
 {
+	if (VK_RESULT_INFO(glfwCreateWindowSurface(m_instance, m_win
+			, nullptr, &m_surface))
+			!= VK_SUCCESS)
+	{
+    throw std::runtime_error("failed to create window surface!");
+	}
 }

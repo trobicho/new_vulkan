@@ -6,7 +6,7 @@
 /*   By: trobicho <trobicho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/11 16:28:16 by trobicho          #+#    #+#             */
-/*   Updated: 2021/10/17 18:58:49 by trobicho         ###   ########.fr       */
+/*   Updated: 2021/10/20 10:21:57 by trobicho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ int main()
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 	GLFWwindow *win = glfwCreateWindow(800, 800, "Vulkan", NULL, NULL);
-	Basic_vulk  vulk(win,
+	Basic_vulk  vulk(win, 800, 800,
 			DEBUG_PRINT_INFO_ALL | DEBUG_VALIDATION_LAYER | DEBUG_EXTENSION);
 
 	vulk.init();

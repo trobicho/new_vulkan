@@ -22,10 +22,25 @@
 	#define VK_RESULT_INFO(result)  (result)
 #endif
 
+#define MAX_UINT32_T		std::numeric_limits<uint32_t>::max()
+
+#include <limits>
+#include <stdexcept>
+
+struct s_swapchain_details
+{
+    VkSurfaceCapabilitiesKHR				capabilities;
+    std::vector<VkSurfaceFormatKHR>	formats;
+    std::vector<VkPresentModeKHR>		present_modes;
+};
+
 class Basic_vulk
 {
 	public:
-		Basic_vulk(GLFWwindow *win, uint32_t debug_mode);
+		Basic_vulk(GLFWwindow *win, uint32_t win_width, uint32_t win_height): 
+			Basic_vulk(win, win_width, win_height, 0x0){};
+		Basic_vulk(GLFWwindow *win, uint32_t win_width, uint32_t win_height
+			, uint32_t debug_mode);
 		~Basic_vulk();
 		void  init();
 
@@ -33,18 +48,28 @@ class Basic_vulk
 		void  create_instance();
 		void	choose_physical_device();
 		void	create_logical_device();
+		void	create_surface();
+		void	create_swapchain();
 
-		GLFWwindow* const m_win;
+		GLFWwindow* const	m_win;
+		uint32_t					m_win_width;
+		uint32_t					m_win_height;
 
 		//STATE VARIABLE
 		uint32_t          m_debug_mode;
 
 		//VULKAN VARIABLE
-		VkInstance        m_instance;
-		VkPhysicalDevice	m_physical_device;
-		VkDevice          m_device;
-		VkQueue						m_queue_graphics;
-		VkSurfaceKHR			m_surface;
+		VkInstance        		m_instance;
+		VkPhysicalDevice			m_physical_device;
+		VkDevice          		m_device;
+		VkQueue								m_queue_graphics;
+		VkSurfaceKHR					m_surface;
+
+		//SWAPCHAIN
+		VkSwapchainKHR				m_swapchain;
+		std::vector<VkImage>	m_swapchain_images;
+		VkSurfaceFormatKHR		m_swapchain_format;
+		VkExtent2D						m_swapchain_extent;
 };
 
 //VAL_LAYER and EXTENSION
@@ -59,3 +84,5 @@ void			info_queue_family_properties(const VkPhysicalDevice &phy_dev, int tab = 1
 
 //OTHER
 uint32_t	queue_family(VkPhysicalDevice device, VkSurfaceKHR surface);
+s_swapchain_details	query_swapchain_details(VkPhysicalDevice phy_dev
+	, VkSurfaceKHR surface);

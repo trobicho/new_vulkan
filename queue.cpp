@@ -6,13 +6,12 @@
 /*   By: trobicho <trobicho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/20 03:10:35 by trobicho          #+#    #+#             */
-/*   Updated: 2021/10/20 03:49:58 by trobicho         ###   ########.fr       */
+/*   Updated: 2021/10/20 10:47:34 by trobicho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Basic_vulk.hpp"
 #include <iostream>
-#include <stdexcept>
 #include <vector>
 
 uint32_t	queue_family(VkPhysicalDevice device, VkSurfaceKHR surface)
@@ -31,5 +30,5 @@ uint32_t	queue_family(VkPhysicalDevice device, VkSurfaceKHR surface)
 			& VK_QUEUE_GRAPHICS_BIT && present_support)
 			return (i);
 	}
-	throw std::runtime_error("failed to find valid queue family!");
+	return (MAX_UINT32_T);
 }
