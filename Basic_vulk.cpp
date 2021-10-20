@@ -6,13 +6,13 @@
 /*   By: trobicho <trobicho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/11 16:37:28 by trobicho          #+#    #+#             */
-/*   Updated: 2021/10/17 19:58:24 by trobicho         ###   ########.fr       */
+/*   Updated: 2021/10/20 03:58:34 by trobicho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Basic_vulk.hpp"
 #include <iostream>
-
+#include <stdexcept>
 
 Basic_vulk::Basic_vulk(GLFWwindow *win, uint32_t debug_mode = 0x0) :
 	m_win(win), m_debug_mode(debug_mode)
@@ -21,6 +21,7 @@ Basic_vulk::Basic_vulk(GLFWwindow *win, uint32_t debug_mode = 0x0) :
 
 Basic_vulk::~Basic_vulk()
 {
+	vkDestroyDevice(m_device, nullptr);
 	vkDestroyInstance(m_instance, nullptr);
 	glfwDestroyWindow(m_win);
 	glfwTerminate();
@@ -30,6 +31,7 @@ void  Basic_vulk::init()
 {
 	create_instance();
 	choose_physical_device();
+	create_logical_device();
 }
 
 void  Basic_vulk::create_instance()
@@ -69,4 +71,35 @@ void  Basic_vulk::create_instance()
 	if (VK_RESULT_INFO(vkCreateInstance(&create_info, NULL, &m_instance))
 			!= VK_SUCCESS)
 		throw std::runtime_error("failed to create instance!");
+}
+
+void	Basic_vulk::create_logical_device()
+{
+	VkDeviceCreateInfo				device_create_info = {};
+	VkDeviceQueueCreateInfo		queue_create_info = {};
+	VkPhysicalDeviceFeatures	device_features = {};
+	std::vector<const char*>  ext_names = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
+
+	uint32_t	queue_family_index = queue_family(m_physical_device, m_surface);
+	queue_create_info.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+	queue_create_info.queueFamilyIndex = queue_family_index;
+	queue_create_info.queueCount = 1;
+	float	queue_priority = 1.0f;
+	queue_create_info.pQueuePriorities = &queue_priority;
+
+	device_create_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+	device_create_info.pQueueCreateInfos = &queue_create_info;
+	device_create_info.queueCreateInfoCount = 1;
+	device_create_info.enabledLayerCount = 0; //Deprecated
+	device_create_info.pEnabledFeatures = &device_features;
+	device_create_info.enabledExtensionCount = ext_names.size();
+	device_create_info.ppEnabledExtensionNames = ext_names.data();
+	if (VK_RESULT_INFO(vkCreateDevice(m_physical_device
+			, &device_create_info, NULL, &m_device)) != VK_SUCCESS)
+		throw std::runtime_error("failed to create device!");
+	vkGetDeviceQueue(m_device, queue_family_index, 0, &m_queue_graphics);
+}
+
+void Basic_vulkan::create_surface()
+{
 }

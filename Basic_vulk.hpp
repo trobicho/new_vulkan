@@ -17,9 +17,9 @@
 #define DEBUG_SHOW_EVERY_RETURN_CODE
 
 #ifdef DEBUG_SHOW_EVERY_RETURN_CODE
-#define VK_RESULT_INFO(result)  (info_vulkan_error_code(result))
+	#define VK_RESULT_INFO(result)  (info_vulkan_error_code(result))
 #else
-#define VK_RESULT_INFO(result)  (result)
+	#define VK_RESULT_INFO(result)  (result)
 #endif
 
 class Basic_vulk
@@ -32,6 +32,7 @@ class Basic_vulk
 	private:
 		void  create_instance();
 		void	choose_physical_device();
+		void	create_logical_device();
 
 		GLFWwindow* const m_win;
 
@@ -42,6 +43,8 @@ class Basic_vulk
 		VkInstance        m_instance;
 		VkPhysicalDevice	m_physical_device;
 		VkDevice          m_device;
+		VkQueue						m_queue_graphics;
+		VkSurfaceKHR			m_surface;
 };
 
 //VAL_LAYER and EXTENSION
@@ -54,3 +57,5 @@ VkResult	info_vulkan_error_code(VkResult error_code);
 void			info_physical_device(const VkPhysicalDevice &phy_dev, int tab = 1);
 void			info_queue_family_properties(const VkPhysicalDevice &phy_dev, int tab = 1);
 
+//OTHER
+uint32_t	queue_family(VkPhysicalDevice device, VkSurfaceKHR surface);

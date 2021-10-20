@@ -6,16 +6,18 @@
 /*   By: trobicho <trobicho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/17 18:34:44 by trobicho          #+#    #+#             */
-/*   Updated: 2021/10/18 20:01:55 by trobicho         ###   ########.fr       */
+/*   Updated: 2021/10/20 03:35:06 by trobicho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Basic_vulk.hpp"
 #include <iostream>
+#include <stdexcept>
 
 static bool	is_device_suitable(const VkPhysicalDevice &phy_dev)
 {
 	uint32_t	queue_family_count;
+	//SWAP_CHAIN_DETAIL vkGetPhysicalDeviceFeatures(device, &dev_feat);
 
 	vkGetPhysicalDeviceQueueFamilyProperties(phy_dev, &queue_family_count, nullptr); //void
 	if (queue_family_count == 0)
