@@ -54,6 +54,10 @@ class Basic_vulk
 		void	create_image_views();
 		void	create_render_pass();
 		void	create_graphics_pipeline();
+		void	create_framebuffers();
+		void	create_command_pool();
+		void	allocate_command_buffers();
+		void	record_command_buffers();
 
 		VkShaderModule	create_shader_module(std::vector<char> &code);
 
@@ -65,21 +69,26 @@ class Basic_vulk
 		uint32_t          m_debug_mode;
 
 		//VULKAN VARIABLE
-		VkInstance        				m_instance;
-		VkPhysicalDevice					m_physical_device;
-		VkDevice          				m_device;
-		VkQueue										m_queue_graphics;
-		VkSurfaceKHR							m_surface;
-		std::vector<VkImageView>	m_image_views;
-		VkPipelineLayout					m_pipeline_layout;
-		VkPipeline								m_graphics_pipeline;
-		VkRenderPass							m_render_pass;
+		VkInstance        						m_instance;
+		VkPhysicalDevice							m_physical_device;
+		VkDevice          						m_device;
+		VkQueue												m_queue_graphics;
+		VkSurfaceKHR									m_surface;
+		std::vector<VkImageView>			m_image_views;
+		VkPipelineLayout							m_pipeline_layout;
+		VkPipeline										m_graphics_pipeline;
+		VkRenderPass									m_render_pass;
+		std::vector<VkFramebuffer>		m_framebuffers;
 
-		//SWAPCHAIN
-		VkSwapchainKHR						m_swapchain;
-		std::vector<VkImage>			m_swapchain_images;
-		VkFormat									m_swapchain_format;
-		VkExtent2D								m_swapchain_extent;
+		//COMMAND	VARIABLE
+		VkCommandPool									m_command_pool;
+		std::vector<VkCommandBuffer>	m_command_buffers;
+
+		//SWAPCHAIN VARIABLE
+		VkSwapchainKHR								m_swapchain;
+		std::vector<VkImage>					m_swapchain_images;
+		VkFormat											m_swapchain_format;
+		VkExtent2D										m_swapchain_extent;
 };
 
 //VAL_LAYER and EXTENSION

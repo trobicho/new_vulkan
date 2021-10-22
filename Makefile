@@ -6,7 +6,7 @@
 #    By: trobicho <trobicho@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/10/16 22:25:09 by trobicho          #+#    #+#              #
-#    Updated: 2021/10/22 11:17:37 by trobicho         ###   ########.fr        #
+#    Updated: 2021/10/22 15:20:54 by trobicho         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -47,6 +47,7 @@ SRCS_NAME =	main.cpp \
 		swapchain.cpp \
 		graphics_pipeline.cpp \
 		pipeline_utils.cpp \
+		command.cpp \
 		info.cpp
 
 HDRS_NAME =	Basic_vulk.hpp \

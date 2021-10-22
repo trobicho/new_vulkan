@@ -6,7 +6,7 @@
 /*   By: trobicho <trobicho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/11 16:37:28 by trobicho          #+#    #+#             */
-/*   Updated: 2021/10/22 11:41:59 by trobicho         ###   ########.fr       */
+/*   Updated: 2021/10/22 16:00:00 by trobicho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,10 @@ Basic_vulk::Basic_vulk(GLFWwindow *win, uint32_t win_width, uint32_t win_height
 
 Basic_vulk::~Basic_vulk()
 {
+	vkDestroyCommandPool(m_device, m_command_pool, nullptr);
+	for (auto framebuffer : m_framebuffers)
+		vkDestroyFramebuffer(m_device, framebuffer, nullptr);
+	vkDestroyPipeline(m_device, m_graphics_pipeline, nullptr);
 	vkDestroyPipelineLayout(m_device, m_pipeline_layout, nullptr);
 	vkDestroyRenderPass(m_device, m_render_pass, nullptr);
 	for (auto image_view : m_image_views)
@@ -45,6 +49,10 @@ void  Basic_vulk::init()
 	create_image_views();
 	create_render_pass();
 	create_graphics_pipeline();
+	create_framebuffers();
+	create_command_pool();
+	allocate_command_buffers();
+	record_command_buffers();
 }
 
 void  Basic_vulk::create_instance()
@@ -173,4 +181,27 @@ void	Basic_vulk::create_render_pass()
 	if (VK_RESULT_INFO(vkCreateRenderPass(m_device, &render_pass_info
 			, nullptr, &m_render_pass)) != VK_SUCCESS)
 		throw std::runtime_error("failed to create render pass!");
+}
+
+void	Basic_vulk::create_framebuffers()
+{
+	m_framebuffers.resize(m_image_views.size());
+	if (m_debug_mode & DEBUG_PRINT_INFO_VK)
+		std::cout << "Framebuffers size: " << m_framebuffers.size() << std::endl;
+	for (size_t i = 0; i < m_image_views.size(); ++i)
+	{
+		VkImageView	attachments[] = {m_image_views[i]};
+		VkFramebufferCreateInfo	framebuffer_info{};
+		framebuffer_info.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+		framebuffer_info.renderPass = m_render_pass;
+		framebuffer_info.attachmentCount = 1;
+		framebuffer_info.pAttachments = attachments;
+		framebuffer_info.width = m_swapchain_extent.width;
+		framebuffer_info.height = m_swapchain_extent.height;
+		framebuffer_info.layers = 1;
+
+		if (VK_RESULT_INFO(vkCreateFramebuffer(m_device, &framebuffer_info
+				, nullptr, &m_framebuffers[i])) != VK_SUCCESS)
+			throw std::runtime_error("failed to create framebuffer!");
+	}
 }
