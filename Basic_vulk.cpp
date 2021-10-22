@@ -6,7 +6,7 @@
 /*   By: trobicho <trobicho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/11 16:37:28 by trobicho          #+#    #+#             */
-/*   Updated: 2021/10/22 10:54:55 by trobicho         ###   ########.fr       */
+/*   Updated: 2021/10/22 11:41:59 by trobicho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ Basic_vulk::Basic_vulk(GLFWwindow *win, uint32_t win_width, uint32_t win_height
 Basic_vulk::~Basic_vulk()
 {
 	vkDestroyPipelineLayout(m_device, m_pipeline_layout, nullptr);
+	vkDestroyRenderPass(m_device, m_render_pass, nullptr);
 	for (auto image_view : m_image_views)
 		vkDestroyImageView(m_device, image_view, nullptr);
 	vkDestroySwapchainKHR(m_device, m_swapchain, nullptr);
@@ -148,4 +149,28 @@ void	Basic_vulk::create_image_views()
 
 void	Basic_vulk::create_render_pass()
 {
+	VkAttachmentDescription color_attachment{};
+	color_attachment.format = m_swapchain_format;
+	color_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
+	color_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+	color_attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+	color_attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	color_attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	color_attachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	color_attachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+	VkAttachmentReference color_attachment_ref{};
+	color_attachment_ref.attachment = 0;
+	color_attachment_ref.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+	VkSubpassDescription subpass{};
+	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+	VkRenderPassCreateInfo render_pass_info{};
+	render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+	render_pass_info.attachmentCount = 1;
+	render_pass_info.pAttachments = &color_attachment;
+	render_pass_info.subpassCount = 1;
+	render_pass_info.pSubpasses = &subpass;
+
+	if (VK_RESULT_INFO(vkCreateRenderPass(m_device, &render_pass_info
+			, nullptr, &m_render_pass)) != VK_SUCCESS)
+		throw std::runtime_error("failed to create render pass!");
 }

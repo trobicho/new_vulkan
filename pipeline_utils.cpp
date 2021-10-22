@@ -6,21 +6,21 @@
 /*   By: trobicho <trobicho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/21 14:29:31 by trobicho          #+#    #+#             */
-/*   Updated: 2021/10/22 10:59:16 by trobicho         ###   ########.fr       */
+/*   Updated: 2021/10/22 11:51:35 by trobicho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Basic_vulk.hpp"
 #include <fstream>
 
-static std::vector<char>	read_file(const std::string& filename)
+std::vector<char>	read_file(const std::string& filename)
 {
 	std::ifstream file(filename, std::ios::ate | std::ios::binary);
 
 	if (!file.is_open())
 		throw std::runtime_error("failed to open file!");
 
-	size_t file_size = (size_t) file.tellg();
+	size_t file_size = (size_t)file.tellg();
 	std::vector<char> buffer(file_size);
 	file.seekg(0);
 	file.read(buffer.data(), file_size);
@@ -29,10 +29,8 @@ static std::vector<char>	read_file(const std::string& filename)
 	return (buffer);
 }
 
-VkShaderModule	Basic_vulk::create_shader_module(const std::string filename)
+VkShaderModule	Basic_vulk::create_shader_module(std::vector<char> &code)
 {
-	auto	code = read_file(filename);
-
 	VkShaderModuleCreateInfo create_info{};
 	create_info.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
 	create_info.codeSize = code.size();

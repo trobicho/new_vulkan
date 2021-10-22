@@ -55,7 +55,7 @@ class Basic_vulk
 		void	create_render_pass();
 		void	create_graphics_pipeline();
 
-		VkShaderModule	create_shader_module(const std::string filename);
+		VkShaderModule	create_shader_module(std::vector<char> &code);
 
 		GLFWwindow* const	m_win;
 		uint32_t					m_win_width;
@@ -96,3 +96,4 @@ void			info_queue_family_properties(const VkPhysicalDevice &phy_dev, int tab = 1
 uint32_t	queue_family(VkPhysicalDevice device, VkSurfaceKHR surface);
 s_swapchain_details	query_swapchain_details(VkPhysicalDevice phy_dev
 	, VkSurfaceKHR surface);
+std::vector<char>	read_file(const std::string& filename);

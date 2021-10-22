@@ -6,7 +6,7 @@
 /*   By: trobicho <trobicho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/22 09:56:39 by trobicho          #+#    #+#             */
-/*   Updated: 2021/10/22 10:58:26 by trobicho         ###   ########.fr       */
+/*   Updated: 2021/10/22 11:53:05 by trobicho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,8 +138,10 @@ static VkPipelineVertexInputStateCreateInfo	vert_input_create(void)
 
 void	Basic_vulk::create_graphics_pipeline()
 {
-	VkShaderModule	vert_shader_module = create_shader_module("shaders/vert.spv");
-	VkShaderModule	frag_shader_module = create_shader_module("shaders/frag.spv");
+	auto	vert_shader_code = read_file("shaders/vert.spv");
+	auto	frag_shader_code = read_file("shaders/frag.spv");
+	VkShaderModule	vert_shader_module = create_shader_module(vert_shader_code);
+	VkShaderModule	frag_shader_module = create_shader_module(frag_shader_code);
 
 	VkPipelineShaderStageCreateInfo	vert_shader_stage_info{};
 	vert_shader_stage_info.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -148,7 +150,7 @@ void	Basic_vulk::create_graphics_pipeline()
 	vert_shader_stage_info.pName = "main";
 	VkPipelineShaderStageCreateInfo	frag_shader_stage_info{};
 	frag_shader_stage_info.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-	frag_shader_stage_info.stage = VK_SHADER_STAGE_VERTEX_BIT;
+	frag_shader_stage_info.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
 	frag_shader_stage_info.module = frag_shader_module;
 	frag_shader_stage_info.pName = "main";
 	VkPipelineShaderStageCreateInfo shader_stages[] =
@@ -195,7 +197,7 @@ void	Basic_vulk::create_graphics_pipeline()
 	pipeline_info.basePipelineIndex = -1;
 	if (vkCreateGraphicsPipelines(m_device, VK_NULL_HANDLE, 1
 			, &pipeline_info, nullptr, &m_graphics_pipeline) != VK_SUCCESS)
-		throw std::runtime_error("failed to create pipeline layout!");
+		throw std::runtime_error("failed to create graphics pipeline!");
 
 	vkDestroyShaderModule(m_device, vert_shader_module, nullptr);
 	vkDestroyShaderModule(m_device, frag_shader_module, nullptr);
