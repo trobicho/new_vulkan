@@ -6,7 +6,7 @@
 /*   By: trobicho <trobicho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/22 15:15:26 by trobicho          #+#    #+#             */
-/*   Updated: 2021/10/22 15:58:44 by trobicho         ###   ########.fr       */
+/*   Updated: 2021/10/22 17:31:17 by trobicho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,9 +63,20 @@ void	Basic_vulk::record_command_buffers()
 				, VK_SUBPASS_CONTENTS_INLINE);
 		vkCmdBindPipeline(m_command_buffers[i]
 				, VK_PIPELINE_BIND_POINT_GRAPHICS, m_graphics_pipeline);
-		vkCmdDraw(m_command_buffers[i], 3, 1, 0, 0);
+		vkCmdDraw(m_command_buffers[i], 4, 1, 0, 0);
 		vkCmdEndRenderPass(m_command_buffers[i]);
 		if (VK_RESULT_INFO(vkEndCommandBuffer(m_command_buffers[i])) !=VK_SUCCESS)
-			throw std::runtime_error("failed to record command buffer");
+			throw std::runtime_error("failed to record command buffer!");
 	}
+}
+
+void	Basic_vulk::create_semaphores()
+{
+	VkSemaphoreCreateInfo semaphore_info{};
+	semaphore_info.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+	if (VK_RESULT_INFO(vkCreateSemaphore(m_device, &semaphore_info
+				, nullptr, &m_semaphore_image_available)) != VK_SUCCESS
+			| VK_RESULT_INFO(vkCreateSemaphore(m_device, &semaphore_info
+				, nullptr, &m_semaphore_render_finish)) != VK_SUCCESS)
+		throw std::runtime_error("failed to create semaphore!");
 }

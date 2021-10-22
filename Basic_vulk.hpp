@@ -27,6 +27,7 @@
 #include <stdexcept>
 #include <vector>
 #include <string>
+#include <iostream>
 
 struct s_swapchain_details
 {
@@ -44,6 +45,8 @@ class Basic_vulk
 			, uint32_t debug_mode);
 		~Basic_vulk();
 		void  init();
+		void	draw_frame();
+		void	wait_idle(){vkDeviceWaitIdle(m_device);}
 
 	private:
 		void  create_instance();
@@ -56,6 +59,7 @@ class Basic_vulk
 		void	create_graphics_pipeline();
 		void	create_framebuffers();
 		void	create_command_pool();
+		void	create_semaphores();
 		void	allocate_command_buffers();
 		void	record_command_buffers();
 
@@ -83,6 +87,8 @@ class Basic_vulk
 		//COMMAND	VARIABLE
 		VkCommandPool									m_command_pool;
 		std::vector<VkCommandBuffer>	m_command_buffers;
+		VkSemaphore										m_semaphore_image_available;
+		VkSemaphore										m_semaphore_render_finish;
 
 		//SWAPCHAIN VARIABLE
 		VkSwapchainKHR								m_swapchain;

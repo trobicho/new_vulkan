@@ -6,12 +6,11 @@
 /*   By: trobicho <trobicho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/20 09:44:51 by trobicho          #+#    #+#             */
-/*   Updated: 2021/10/22 10:53:20 by trobicho         ###   ########.fr       */
+/*   Updated: 2021/10/22 17:12:37 by trobicho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Basic_vulk.hpp"
-
 
 s_swapchain_details		query_swapchain_details(VkPhysicalDevice phy_dev
 		, VkSurfaceKHR surface)

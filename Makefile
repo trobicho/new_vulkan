@@ -6,7 +6,7 @@
 #    By: trobicho <trobicho@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/10/16 22:25:09 by trobicho          #+#    #+#              #
-#    Updated: 2021/10/22 15:20:54 by trobicho         ###   ########.fr        #
+#    Updated: 2021/10/22 17:39:09 by trobicho         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -33,22 +33,23 @@ else
 	LDFLAGS = -L$(GLFW3_PATH)/lib -L$(VULKAN_SDK)/lib `pkg-config --static --libs glm` -lvulkan -lglfw -lm
 endif
 
-SHADERS_NAME = shader.frag \
-		shader.vert \
+SHADERS_NAME =	fractal.frag \
+								shader.vert \
 
-SHADERS_RESULT_NAME = frag.spv \
-		vert.spv \
+SHADERS_RESULT_NAME =	frag.spv \
+											vert.spv \
 
 SRCS_NAME =	main.cpp \
-		Basic_vulk.cpp \
-		validation_layer.cpp \
-		device_phy.cpp \
-		queue.cpp \
-		swapchain.cpp \
-		graphics_pipeline.cpp \
-		pipeline_utils.cpp \
-		command.cpp \
-		info.cpp
+						Basic_vulk.cpp \
+						validation_layer.cpp \
+						device_phy.cpp \
+						queue.cpp \
+						swapchain.cpp \
+						graphics_pipeline.cpp \
+						pipeline_utils.cpp \
+						command.cpp \
+						info.cpp \
+						draw.cpp
 
 HDRS_NAME =	Basic_vulk.hpp \
 
@@ -60,7 +61,7 @@ OBJS = $(addprefix $(OBJS_PATH)/, $(OBJS_NAME))
 SHADERS = $(addprefix $(SHADERS_PATH)/, $(SHADERS_NAME))
 SHADERS_RESULT = $(addprefix $(SHADERS_PATH)/, $(SHADERS_RESULT_NAME))
 
-all: $(NAME)
+all: $(NAME) shaders Makefile
 
 $(NAME): $(SRCS) $(HDRS) $(OBJS) Makefile
 	$(CC) $(CXXFLAGS) $(INCS_FLAGS) $(OBJS) $(LDFLAGS) -o $(NAME)
@@ -72,7 +73,7 @@ $(OBJS_PATH)/%.o: $(SRCS_PATH)/%.cpp $(HDRS) Makefile
 	@$(CC) $(CXXFLAGS) -I $(HDRS_PATH) $(INCS_FLAGS) -c $< -o $@
 	@printf "\e[0K"
 
-shaders: $(SHADERS_RESULT)
+shaders: $(SHADERS_RESULT) Makefile
 
 $(SHADERS_RESULT): $(SHADERS)
 	$(GLS) -V $(SHADERS)

@@ -6,7 +6,7 @@
 /*   By: trobicho <trobicho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/11 16:37:28 by trobicho          #+#    #+#             */
-/*   Updated: 2021/10/22 16:00:00 by trobicho         ###   ########.fr       */
+/*   Updated: 2021/10/22 17:28:42 by trobicho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,8 @@ Basic_vulk::Basic_vulk(GLFWwindow *win, uint32_t win_width, uint32_t win_height
 
 Basic_vulk::~Basic_vulk()
 {
+	vkDestroySemaphore(m_device, m_semaphore_render_finish, nullptr);
+	vkDestroySemaphore(m_device, m_semaphore_image_available, nullptr);
 	vkDestroyCommandPool(m_device, m_command_pool, nullptr);
 	for (auto framebuffer : m_framebuffers)
 		vkDestroyFramebuffer(m_device, framebuffer, nullptr);
@@ -53,6 +55,7 @@ void  Basic_vulk::init()
 	create_command_pool();
 	allocate_command_buffers();
 	record_command_buffers();
+	create_semaphores();
 }
 
 void  Basic_vulk::create_instance()
@@ -171,12 +174,24 @@ void	Basic_vulk::create_render_pass()
 	color_attachment_ref.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 	VkSubpassDescription subpass{};
 	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+	subpass.colorAttachmentCount = 1;
+	subpass.pColorAttachments = &color_attachment_ref;
+	VkSubpassDependency dependency{};
+	dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+	dependency.dstSubpass = 0;
+	dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	dependency.srcAccessMask = 0;
+	dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+
 	VkRenderPassCreateInfo render_pass_info{};
 	render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
 	render_pass_info.attachmentCount = 1;
 	render_pass_info.pAttachments = &color_attachment;
 	render_pass_info.subpassCount = 1;
 	render_pass_info.pSubpasses = &subpass;
+	render_pass_info.dependencyCount = 1;
+	render_pass_info.pDependencies = &dependency;
 
 	if (VK_RESULT_INFO(vkCreateRenderPass(m_device, &render_pass_info
 			, nullptr, &m_render_pass)) != VK_SUCCESS)
