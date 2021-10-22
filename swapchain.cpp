@@ -6,7 +6,7 @@
 /*   By: trobicho <trobicho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/20 09:44:51 by trobicho          #+#    #+#             */
-/*   Updated: 2021/10/20 11:00:05 by trobicho         ###   ########.fr       */
+/*   Updated: 2021/10/22 10:53:20 by trobicho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,6 +130,6 @@ void	Basic_vulk::create_swapchain()
 	if (VK_RESULT_INFO(vkGetSwapchainImagesKHR(m_device, m_swapchain
 			, &image_count, m_swapchain_images.data())) != VK_SUCCESS)
   	throw std::runtime_error("failed to retrive swap chain images!");
-	m_swapchain_format = surface_format;
+	m_swapchain_format = surface_format.format;
 	m_swapchain_extent = extent;
 }

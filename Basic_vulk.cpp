@@ -6,13 +6,12 @@
 /*   By: trobicho <trobicho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/11 16:37:28 by trobicho          #+#    #+#             */
-/*   Updated: 2021/10/20 10:39:59 by trobicho         ###   ########.fr       */
+/*   Updated: 2021/10/22 10:54:55 by trobicho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Basic_vulk.hpp"
 #include <iostream>
-#include <stdexcept>
 
 Basic_vulk::Basic_vulk(GLFWwindow *win, uint32_t win_width, uint32_t win_height
 	, uint32_t debug_mode = 0) : m_win(win)
@@ -24,6 +23,9 @@ Basic_vulk::Basic_vulk(GLFWwindow *win, uint32_t win_width, uint32_t win_height
 
 Basic_vulk::~Basic_vulk()
 {
+	vkDestroyPipelineLayout(m_device, m_pipeline_layout, nullptr);
+	for (auto image_view : m_image_views)
+		vkDestroyImageView(m_device, image_view, nullptr);
 	vkDestroySwapchainKHR(m_device, m_swapchain, nullptr);
 	vkDestroyDevice(m_device, nullptr);
 	vkDestroySurfaceKHR(m_instance, m_surface, nullptr);
@@ -39,6 +41,9 @@ void  Basic_vulk::init()
 	choose_physical_device();
 	create_logical_device();
 	create_swapchain();
+	create_image_views();
+	create_render_pass();
+	create_graphics_pipeline();
 }
 
 void  Basic_vulk::create_instance()
@@ -112,9 +117,35 @@ void	Basic_vulk::create_logical_device()
 void	Basic_vulk::create_surface()
 {
 	if (VK_RESULT_INFO(glfwCreateWindowSurface(m_instance, m_win
-			, nullptr, &m_surface))
-			!= VK_SUCCESS)
-	{
+			, nullptr, &m_surface))!= VK_SUCCESS)
     throw std::runtime_error("failed to create window surface!");
+}
+
+void	Basic_vulk::create_image_views()
+{
+	m_image_views.resize(m_swapchain_images.size());
+	for (size_t i = 0; i < m_swapchain_images.size(); ++i)
+	{
+		VkImageViewCreateInfo	create_info{};
+		create_info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+		create_info.image = m_swapchain_images[i];
+		create_info.viewType = VK_IMAGE_VIEW_TYPE_2D;
+		create_info.format = m_swapchain_format;
+		create_info.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
+		create_info.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
+		create_info.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
+		create_info.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
+		create_info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		create_info.subresourceRange.baseMipLevel = 0;
+		create_info.subresourceRange.levelCount = 1;
+		create_info.subresourceRange.baseArrayLayer = 0;
+		create_info.subresourceRange.layerCount = 1;
+		if (VK_RESULT_INFO(vkCreateImageView(m_device, &create_info, nullptr
+				, &m_image_views[i])) != VK_SUCCESS)
+			throw std::runtime_error("failed to create image views");
 	}
+}
+
+void	Basic_vulk::create_render_pass()
+{
 }

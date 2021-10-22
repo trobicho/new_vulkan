@@ -6,13 +6,12 @@
 /*   By: trobicho <trobicho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/20 03:10:35 by trobicho          #+#    #+#             */
-/*   Updated: 2021/10/20 10:47:34 by trobicho         ###   ########.fr       */
+/*   Updated: 2021/10/21 15:00:32 by trobicho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Basic_vulk.hpp"
 #include <iostream>
-#include <vector>
 
 uint32_t	queue_family(VkPhysicalDevice device, VkSurfaceKHR surface)
 {

@@ -3,7 +3,6 @@
 #define GLFW_INCLUDE_VULKAN
 #include "GLFW/glfw3.h"
 
-#include <vector>
 
 #define DEBUG_PRINT_INFO_VK       0x0001
 #define DEBUG_PRINT_INFO_DEVICE   0x0002
@@ -26,6 +25,8 @@
 
 #include <limits>
 #include <stdexcept>
+#include <vector>
+#include <string>
 
 struct s_swapchain_details
 {
@@ -50,6 +51,11 @@ class Basic_vulk
 		void	create_logical_device();
 		void	create_surface();
 		void	create_swapchain();
+		void	create_image_views();
+		void	create_render_pass();
+		void	create_graphics_pipeline();
+
+		VkShaderModule	create_shader_module(const std::string filename);
 
 		GLFWwindow* const	m_win;
 		uint32_t					m_win_width;
@@ -59,17 +65,21 @@ class Basic_vulk
 		uint32_t          m_debug_mode;
 
 		//VULKAN VARIABLE
-		VkInstance        		m_instance;
-		VkPhysicalDevice			m_physical_device;
-		VkDevice          		m_device;
-		VkQueue								m_queue_graphics;
-		VkSurfaceKHR					m_surface;
+		VkInstance        				m_instance;
+		VkPhysicalDevice					m_physical_device;
+		VkDevice          				m_device;
+		VkQueue										m_queue_graphics;
+		VkSurfaceKHR							m_surface;
+		std::vector<VkImageView>	m_image_views;
+		VkPipelineLayout					m_pipeline_layout;
+		VkPipeline								m_graphics_pipeline;
+		VkRenderPass							m_render_pass;
 
 		//SWAPCHAIN
-		VkSwapchainKHR				m_swapchain;
-		std::vector<VkImage>	m_swapchain_images;
-		VkSurfaceFormatKHR		m_swapchain_format;
-		VkExtent2D						m_swapchain_extent;
+		VkSwapchainKHR						m_swapchain;
+		std::vector<VkImage>			m_swapchain_images;
+		VkFormat									m_swapchain_format;
+		VkExtent2D								m_swapchain_extent;
 };
 
 //VAL_LAYER and EXTENSION
