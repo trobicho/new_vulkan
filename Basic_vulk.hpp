@@ -47,6 +47,13 @@ class Basic_vulk
 		void  init();
 		void	draw_frame();
 		void	wait_idle(){vkDeviceWaitIdle(m_device);}
+		void	framebuffer_resize_callback(GLFWwindow *win, int width, int height)
+		{
+			m_win_width = width;
+			m_win_height = height;
+			std::cout << "WIN SIZE :" << width << ", " << height << std::endl;
+			m_framebuffer_resize = true;
+		}
 
 	private:
 		void  create_instance();
@@ -62,6 +69,8 @@ class Basic_vulk
 		void	create_semaphores();
 		void	allocate_command_buffers();
 		void	record_command_buffers();
+		void	recreate_swapchain();
+		void	cleanup_swapchain();
 
 		VkShaderModule	create_shader_module(std::vector<char> &code);
 
@@ -71,6 +80,7 @@ class Basic_vulk
 
 		//STATE VARIABLE
 		uint32_t          m_debug_mode;
+		bool							m_framebuffer_resize = false;
 
 		//VULKAN VARIABLE
 		VkInstance        						m_instance;

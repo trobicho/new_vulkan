@@ -6,7 +6,7 @@
 /*   By: trobicho <trobicho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/22 16:17:39 by trobicho          #+#    #+#             */
-/*   Updated: 2021/10/22 16:43:09 by trobicho         ###   ########.fr       */
+/*   Updated: 2021/10/25 17:24:54 by trobicho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,18 @@ void	Basic_vulk::draw_frame()
 {
 	uint32_t	image_index;
 
-	vkAcquireNextImageKHR(m_device, m_swapchain, UINT64_MAX
+	VkResult	result = vkAcquireNextImageKHR(m_device, m_swapchain, UINT64_MAX
 		, m_semaphore_image_available, VK_NULL_HANDLE, &image_index);
 
+	VK_RESULT_INFO(result);
+	if (result == VK_ERROR_OUT_OF_DATE_KHR || m_framebuffer_resize)
+	{
+		recreate_swapchain();
+		m_framebuffer_resize = false;
+		return;
+	}
+	else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
+    throw std::runtime_error("failed to acquire swap chain image!");
 	VkSubmitInfo	submit_info{};
 	VkSemaphore	wait_semaphores[] = {m_semaphore_image_available};
 	VkPipelineStageFlags	wait_stages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
@@ -44,6 +53,15 @@ void	Basic_vulk::draw_frame()
 	present_info.pSwapchains = swapchains;
 	present_info.pImageIndices = &image_index;
 	present_info.pResults = nullptr; //TODO: check result
-	vkQueuePresentKHR(m_queue_graphics, &present_info);
+	result = vkQueuePresentKHR(m_queue_graphics, &present_info);
+	VK_RESULT_INFO(result);
+	if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR
+			|| m_framebuffer_resize)
+	{
+		recreate_swapchain();
+		m_framebuffer_resize = false;
+	}
+	else if (result != VK_SUCCESS)
+    throw std::runtime_error("failed to present swap chain image!");
 	vkQueueWaitIdle(m_queue_graphics);
 }

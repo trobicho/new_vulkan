@@ -6,7 +6,7 @@
 /*   By: trobicho <trobicho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/11 16:37:28 by trobicho          #+#    #+#             */
-/*   Updated: 2021/10/22 17:28:42 by trobicho         ###   ########.fr       */
+/*   Updated: 2021/10/25 17:20:02 by trobicho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,19 +21,27 @@ Basic_vulk::Basic_vulk(GLFWwindow *win, uint32_t win_width, uint32_t win_height
 {
 }
 
-Basic_vulk::~Basic_vulk()
+void	Basic_vulk::cleanup_swapchain()
 {
-	vkDestroySemaphore(m_device, m_semaphore_render_finish, nullptr);
-	vkDestroySemaphore(m_device, m_semaphore_image_available, nullptr);
-	vkDestroyCommandPool(m_device, m_command_pool, nullptr);
 	for (auto framebuffer : m_framebuffers)
 		vkDestroyFramebuffer(m_device, framebuffer, nullptr);
+	vkFreeCommandBuffers(m_device, m_command_pool
+		, static_cast<uint32_t>(m_command_buffers.size())
+		, m_command_buffers.data());
 	vkDestroyPipeline(m_device, m_graphics_pipeline, nullptr);
 	vkDestroyPipelineLayout(m_device, m_pipeline_layout, nullptr);
 	vkDestroyRenderPass(m_device, m_render_pass, nullptr);
 	for (auto image_view : m_image_views)
 		vkDestroyImageView(m_device, image_view, nullptr);
 	vkDestroySwapchainKHR(m_device, m_swapchain, nullptr);
+}
+
+Basic_vulk::~Basic_vulk()
+{
+	cleanup_swapchain();
+	vkDestroySemaphore(m_device, m_semaphore_render_finish, nullptr);
+	vkDestroySemaphore(m_device, m_semaphore_image_available, nullptr);
+	vkDestroyCommandPool(m_device, m_command_pool, nullptr);
 	vkDestroyDevice(m_device, nullptr);
 	vkDestroySurfaceKHR(m_instance, m_surface, nullptr);
 	vkDestroyInstance(m_instance, nullptr);
@@ -56,6 +64,21 @@ void  Basic_vulk::init()
 	allocate_command_buffers();
 	record_command_buffers();
 	create_semaphores();
+}
+
+void	Basic_vulk::recreate_swapchain()
+{
+	vkDeviceWaitIdle(m_device);
+	
+	cleanup_swapchain();
+
+	create_swapchain();
+	create_image_views();
+	create_render_pass();
+	create_graphics_pipeline();
+	create_framebuffers();
+	allocate_command_buffers();
+	record_command_buffers();
 }
 
 void  Basic_vulk::create_instance()
