@@ -6,11 +6,43 @@
 /*   By: trobicho <trobicho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/22 16:17:39 by trobicho          #+#    #+#             */
-/*   Updated: 2021/10/22 16:43:09 by trobicho         ###   ########.fr       */
+/*   Updated: 2021/10/23 11:19:03 by trobicho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Basic_vulk.hpp"
+
+void	Basic_vulk::record_command_buffer_to_draw(uint32_t image_index)
+{
+	VkCommandBufferBeginInfo	begin_info{};
+	begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+	begin_info.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+	begin_info.pInheritanceInfo = nullptr;
+	if (VK_RESULT_INFO(vkBeginCommandBuffer(m_command_buffers[image_index]
+			, &begin_info)) != VK_SUCCESS)
+		throw std::runtime_error("failed to begin recording command buffer!");
+	VkRenderPassBeginInfo render_pass_info{};
+	render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+	render_pass_info.renderPass = m_render_pass;
+	render_pass_info.framebuffer = m_framebuffers[image_index];
+	render_pass_info.renderArea.offset = {0, 0};
+	render_pass_info.renderArea.extent = m_swapchain_extent;
+	VkClearValue clear_color = {{{0.0f, 0.0f, 0.0f, 1.0f}}};
+	render_pass_info.clearValueCount = 1;
+	render_pass_info.pClearValues = &clear_color;
+	vkCmdBeginRenderPass(m_command_buffers[image_index], &render_pass_info
+		, VK_SUBPASS_CONTENTS_INLINE);
+	vkCmdBindPipeline(m_command_buffers[image_index]
+		, VK_PIPELINE_BIND_POINT_GRAPHICS, m_graphics_pipeline);
+	vkCmdPushConstants(m_command_buffers[image_index], m_pipeline_layout
+		, VK_SHADER_STAGE_FRAGMENT_BIT, 0
+		, sizeof(s_frag_shader_constant), &m_constant);
+	vkCmdDraw(m_command_buffers[image_index], 4, 1, 0, 0);
+	vkCmdEndRenderPass(m_command_buffers[image_index]);
+	if (VK_RESULT_INFO(vkEndCommandBuffer(m_command_buffers[image_index]))
+			!=VK_SUCCESS)
+		throw std::runtime_error("failed to record command buffer!");
+}
 
 void	Basic_vulk::draw_frame()
 {
@@ -18,6 +50,10 @@ void	Basic_vulk::draw_frame()
 
 	vkAcquireNextImageKHR(m_device, m_swapchain, UINT64_MAX
 		, m_semaphore_image_available, VK_NULL_HANDLE, &image_index);
+	
+	//-------------COMMAND BUFFER--
+	record_command_buffer_to_draw(image_index);
+	//-------------COMMAND BUFFER--
 
 	VkSubmitInfo	submit_info{};
 	VkSemaphore	wait_semaphores[] = {m_semaphore_image_available};

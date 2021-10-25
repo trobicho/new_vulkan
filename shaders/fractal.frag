@@ -7,16 +7,22 @@ layout(location = 0) out vec4 outColor;
 
 layout(origin_upper_left) in vec4 gl_FragCoord;
 
-#define MAX_ITER	1000
-
-int		mandelbrot(vec2 z)
+layout( push_constant ) uniform constants
 {
-	float	zrs;
-	float	zis;
-	float	zir;
-	vec2	c = z;
+	dvec2	min;
+	dvec2	max;
+	int		max_iter;
+	float	time;
+}push_constants;
 
-	for (int i = 0; i < MAX_ITER; i++)
+int		mandelbrot(dvec2 z)
+{
+	double	zrs;
+	double	zis;
+	double	zir;
+	dvec2		c = z;
+
+	for (int i = 0; i < push_constants.max_iter; i++)
 	{
 		zrs = c.x * c.x;
 		zis = c.y * c.y;
@@ -26,7 +32,7 @@ int		mandelbrot(vec2 z)
 		c.x = zrs - zis + z.x;
 		c.y = zir + zir + z.y;
 	}
-	return (MAX_ITER);
+	return (push_constants.max_iter);
 }
 
 void	main()
@@ -37,21 +43,25 @@ void	main()
 
 	//vec2 min = vec2(0.278587, -0.012560);
 	//vec2 max = vec2(0.285413, -0.007440);
-	vec2 min = vec2(-2.5, -2.0);
-	vec2 max = vec2(1.5, 2.0);
-	vec2 z = uv * (max - min) + min;
-	vec2 c = mix(vec2(min.x, min.y), vec2(max.x, max.y), gl_FragCoord.xy
-		/ vec2(800, 800));
+	dvec2 min = push_constants.min;
+	dvec2 max = push_constants.max;
+
+	dvec2 z = uv * (max - min) + min;
+	dvec2 c = mix(dvec2(min.x, min.y), dvec2(max.x, max.y), gl_FragCoord.xy
+		/ dvec2(1920, 1080));
 
 	int col = mandelbrot(c);
-	if (col == MAX_ITER)
+	if (col == push_constants.max_iter)
 		color = vec3(0.0, 0.0, 0.0);
 	else
 	{
 		col %= 30;
 		if (col >= 15)
 			col = 30 - col;
-		color = vec3(1.0 / col);
+		float time = push_constants.time / 500;
+		color = vec3(sin(col + time)
+			, 1.0 / (col + sin(time / 10.0))
+			, 1.0 / (col + cos(time)));
 	}
 	outColor = vec4(color, 1.0);
 }

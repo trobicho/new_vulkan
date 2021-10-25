@@ -6,7 +6,7 @@
 /*   By: trobicho <trobicho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/11 16:37:28 by trobicho          #+#    #+#             */
-/*   Updated: 2021/10/22 17:28:42 by trobicho         ###   ########.fr       */
+/*   Updated: 2021/10/23 10:41:35 by trobicho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ void  Basic_vulk::init()
 	create_framebuffers();
 	create_command_pool();
 	allocate_command_buffers();
-	record_command_buffers();
+	//record_command_buffers();
 	create_semaphores();
 }
 

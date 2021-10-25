@@ -6,7 +6,7 @@
 /*   By: trobicho <trobicho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/22 15:15:26 by trobicho          #+#    #+#             */
-/*   Updated: 2021/10/22 17:31:17 by trobicho         ###   ########.fr       */
+/*   Updated: 2021/10/23 11:18:47 by trobicho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void	Basic_vulk::create_command_pool()
 	VkCommandPoolCreateInfo	pool_info{};
 	pool_info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 	pool_info.queueFamilyIndex = queue_family_index;
-	pool_info.flags = 0;
+	pool_info.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 	if (VK_RESULT_INFO(vkCreateCommandPool(m_device, &pool_info
 			, nullptr, &m_command_pool)) != VK_SUCCESS)
 		throw std::runtime_error("failed to create command pool!");

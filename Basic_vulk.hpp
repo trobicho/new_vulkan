@@ -29,14 +29,24 @@
 #include <string>
 #include <iostream>
 
-struct s_swapchain_details
+#include <glm/glm.hpp>
+
+struct	s_frag_shader_constant
+{
+	glm::dvec2	min;
+	glm::dvec2	max;
+	int					max_iter;
+	float				time;
+};
+
+struct	s_swapchain_details
 {
     VkSurfaceCapabilitiesKHR				capabilities;
     std::vector<VkSurfaceFormatKHR>	formats;
     std::vector<VkPresentModeKHR>		present_modes;
 };
 
-class Basic_vulk
+class		Basic_vulk
 {
 	public:
 		Basic_vulk(GLFWwindow *win, uint32_t win_width, uint32_t win_height): 
@@ -46,6 +56,7 @@ class Basic_vulk
 		~Basic_vulk();
 		void  init();
 		void	draw_frame();
+		void	update_constant(s_frag_shader_constant constant){m_constant = constant;}
 		void	wait_idle(){vkDeviceWaitIdle(m_device);}
 
 	private:
@@ -64,11 +75,15 @@ class Basic_vulk
 		void	record_command_buffers();
 
 		VkShaderModule	create_shader_module(std::vector<char> &code);
+		void						record_command_buffer_to_draw(uint32_t image_index);
 
 		GLFWwindow* const	m_win;
 		uint32_t					m_win_width;
 		uint32_t					m_win_height;
 
+		//SHADER VARIABLE
+		s_frag_shader_constant	m_constant;
+		
 		//STATE VARIABLE
 		uint32_t          m_debug_mode;
 

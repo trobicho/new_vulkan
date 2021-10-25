@@ -6,7 +6,7 @@
 /*   By: trobicho <trobicho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/22 09:56:39 by trobicho          #+#    #+#             */
-/*   Updated: 2021/10/22 17:32:26 by trobicho         ###   ########.fr       */
+/*   Updated: 2021/10/23 11:12:39 by trobicho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,12 +167,17 @@ void	Basic_vulk::create_graphics_pipeline()
 			multisampling_create();
 	VkPipelineVertexInputStateCreateInfo		vert_input_info = vert_input_create();
 
+	VkPushConstantRange	push_constant;
+	push_constant.offset = 0;
+	push_constant.size = sizeof(s_frag_shader_constant);
+	push_constant.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 	VkPipelineLayoutCreateInfo pipeline_layout_info{};
+
 	pipeline_layout_info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 	pipeline_layout_info.setLayoutCount = 0; // Optional
 	pipeline_layout_info.pSetLayouts = nullptr; // Optional
-	pipeline_layout_info.pushConstantRangeCount = 0; // Optional
-	pipeline_layout_info.pPushConstantRanges = nullptr; // Optional
+	pipeline_layout_info.pPushConstantRanges = &push_constant;
+	pipeline_layout_info.pushConstantRangeCount = 1;
 
 	if (VK_RESULT_INFO(vkCreatePipelineLayout(m_device, &pipeline_layout_info
 			, nullptr, &m_pipeline_layout)) != VK_SUCCESS)
